@@ -60,21 +60,21 @@ class PlanetWars:
     def my_fleets(self):
         return [fleet for fleet in self.fleets if fleet.owner == 1]
 
-    def enemy_fleets(self):
+    def enemy_fleets(self): # where the enemy is sending their fleets
         return [fleet for fleet in self.fleets if fleet.owner == 2]
 
     def __str__(self):
         s = ''
         for p in self.planets:
             s += "P %f %f %d %d %d\n" % \
-                 (p.x(), p.y(), p.owner, p.num_ships(), p.growth_rate())
+                 (p.x(), p.y(), p.owner, p.num_ships(), p.growth_rate())  # what you can get from planet
         for f in self.fleets:
             s += "F %d %d %d %d %d %d\n" % \
                  (f.owner, f.num_ships(), f.source_planet(), f.destination_planet(),
                   f.total_trip_length(), f.turns_remaining())
         return s
 
-    def distance(self, source_planet, destination_planet):
+    def distance(self, source_planet, destination_planet): # distance between planets
         source = self.planets[source_planet]
         destination = self.planets[destination_planet]
         dx = source.x - destination.x

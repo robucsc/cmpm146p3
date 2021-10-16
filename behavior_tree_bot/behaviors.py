@@ -1,4 +1,5 @@
 import sys
+import math
 sys.path.insert(0, '../')
 from planet_wars import issue_order
 
@@ -39,3 +40,68 @@ def spread_to_weakest_neutral_planet(state):
     else:
         # (4) Send half the ships from my strongest planet to the weakest enemy planet.
         return issue_order(state, strongest_planet.ID, weakest_planet.ID, strongest_planet.num_ships / 2)
+
+
+def spread_to_closest_planet(state): # performs the action of spreading to closest planet
+    if len(state.my_planets()) == 0: # if we currently have no planets
+        return False
+
+    strongest_planet = max(state.my_planets(), key=lambda p: p.num_ships, default=None)
+
+    # find the closest planet to attack
+    closest_distance = float("inf") # initiate variable (can be longer but this is enough?)
+    closest_weak_planet = None # initiate variable
+    # loop thru not my planets and find the closest planet
+    for planet in state.not_my_planets():
+        x, y = strongest_planet.x - planet.x, strongest_planet.y - planet.y
+        distance = int(math.ceil(math.sqrt(x**2 + y**2))) + planet.num_ships
+        if distance < closest_distance:
+            closest_weak_planet = planet
+            closest_distance = distance
+
+    # check if order should be issued or not
+    if (strongest_planet.num_ships > closest_weak_planet.num_ships):
+        return issue_order(state, strongest_planet.ID, closest_weak_planet.ID, strongest_planet.num_ships / 2)
+    else:
+        return False
+
+def spread_and_attack_planets(state): # performs as many spread and attacks as possible using all my planets
+    my_planets = iter(sorted(state.my_planets(), key=lambda planet: planet.num_ships)) # sort my planets based on num of ships
+
+    possible_planets = [planet for planet in state.not_my_planets() 
+                      if not any(fleet.destination_planet == planet.ID for fleet in state.my_fleets())] # make a list of planets that I can spread into or attack 
+    possible_planets.sort(key=lambda planet: planet.num_ships) # sort the possible planets for my planets to spread or attack in ascending order
+
+    target_planets = iter(possible_planets) # to start iteration of target planets from possible planets
+
+    try:
+        my_planet = next(my_planets) # initiator of to get the items of my_planets
+        target_planet = next(target_planets) # initiator of to get the items of target_planets
+        while True:
+            required_ships = target_planet.num_ships + 1 # calculate the required ships to make the target_planet (assuming its neutral) into my-planet
+
+            if target_planet in state.enemy_planets():
+                required_ships = target_planet.num_ships + \
+                                 state.distance(my_planet.ID, target_planet.ID) * target_planet.growth_rate + 1  # calculate the required ships to make the target_planet (assuming its enemy) into my-planet
+
+            # check to whether attack or move to my next planet
+            if my_planet.num_ships > required_ships: # check if my current planet has enough ships
+                return issue_order(state, my_planet.ID, target_planet.ID, required_ships) # issue order if can make the target planet my planet
+                my_planet = next(my_planets) # get next item of my_planet list
+                target_planet = next(target_planets) # get next item of target_planet list
+            else:
+                my_planet = next(my_planets) # get next item of my_planet list
+
+    except StopIteration: # ran out of my_planets or target_planets
+        return False
+
+
+
+
+
+
+
+
+
+
+

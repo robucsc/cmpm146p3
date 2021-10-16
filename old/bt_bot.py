@@ -36,20 +36,11 @@ def setup_behavior_tree():
     spread_action = Action(spread_to_weakest_neutral_planet)
     spread_sequence.child_nodes = [neutral_planet_check, spread_action]
 
-    spread_closest = Sequence(name='Spread Closest Strategy') # added: spread to closest planet
-    possible_planet_check = Check(if_neutral_planet_available) and Check(if_enemy_planet_available)# added: check if there is enemy or neutral planet left
-    spread_closest_action = Action(spread_to_closest_planet) # added: issue the order to spread to closest planet
-    spread_sequence.child_nodes = [possible_planet_check, spread_closest_action] # added: spread the sequence
-
-    spread_and_attack = Sequence(name='Spread and Attack Strategy') # added: spread and atatck with all my planets
-    possible_planet_check = Check(if_neutral_planet_available) and Check(if_enemy_planet_available)# added: check if there is any neutral or enemy planet left
-    spread_action = Action(spread_and_attack_planets) # added: issue the order to spread/attack the planet
-    spread_sequence.child_nodes = [possible_planet_check, spread_action] # added: spread/attack
-
     root.child_nodes = [offensive_plan, spread_sequence, attack.copy()]
 
     logging.info('\n' + root.tree_to_string())
     return root
+
 
 # You don't need to change this function
 def do_turn(state):
