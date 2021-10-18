@@ -41,7 +41,6 @@ def setup_behavior_tree():
     logging.info('\n' + root.tree_to_string())
     return root
 
-
 # You don't need to change this function
 def do_turn(state):
     behavior_tree.execute(planet_wars)
