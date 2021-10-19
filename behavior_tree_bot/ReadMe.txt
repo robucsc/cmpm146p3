@@ -1,3 +1,11 @@
+Alex we were not sure what you wanted from the bt_bot.log file. Asiiah suggested the stuff below.txt
+
+Thanks!
+
+-Rob- and Kai
+
+
+
 INFO:root:
 Selector: High Level Ordering of Strategies
 | Sequence: Spread and Attack Strategy
